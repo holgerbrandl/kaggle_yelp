@@ -15,7 +15,8 @@ import training.cnnEpochs._
 
 object runPipeline {
   def main(args: Array[String]): Unit = {
-    
+    print("starting data prep")
+
   // image processing on training data
   val labMap = readBizLabels("data/labels/train.csv")
   val bizMap = readBiz2ImgLabels("data/labels/train_photo_to_biz_ids.csv")
@@ -23,6 +24,7 @@ object runPipeline {
   val dataMap = processImages(imgs, resizeImgDim = 64) // nPixels = 64
   val alignedData = new alignedData(dataMap, bizMap, Option(labMap))()
 
+    print("building models")
 
 
   // training (one model/class at a time). Many microparameters hardcoded within
