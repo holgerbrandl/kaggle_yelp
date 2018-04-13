@@ -1,29 +1,31 @@
 package modeling.training
 
-import modeling.processing.makeDataSets._
-import modeling.io._
-import modeling.processing.alignedData
-import java.util.Random
-import java.nio.file._
 import java.io.{DataOutputStream, File}
+import java.nio.file._
+import java.util.Random
+
+import modeling.processing.alignedData
+import modeling.processing.makeDataSets._
 import org.apache.commons.io.FileUtils
+import org.deeplearning4j.datasets.iterator.MultipleEpochsIterator
+import org.deeplearning4j.datasets.iterator.impl.ListDataSetIterator
 import org.deeplearning4j.eval.Evaluation
 import org.deeplearning4j.nn.api.OptimizationAlgorithm
-import org.deeplearning4j.nn.conf.layers.setup.ConvolutionLayerSetup
-import org.deeplearning4j.nn.conf.layers.{ConvolutionLayer, OutputLayer, SubsamplingLayer, DenseLayer}
+import org.deeplearning4j.nn.conf.layers.{ConvolutionLayer, DenseLayer, OutputLayer, SubsamplingLayer}
 import org.deeplearning4j.nn.conf.{MultiLayerConfiguration, NeuralNetConfiguration}
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.deeplearning4j.nn.weights.WeightInit
 import org.deeplearning4j.optimize.api.IterationListener
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener
+import org.nd4j.linalg.activations.Activation
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.dataset.SplitTestAndTrain
 import org.nd4j.linalg.factory.Nd4j
+import org.nd4j.linalg.learning.config.Nesterovs
 import org.nd4j.linalg.lossfunctions.LossFunctions
 import org.slf4j.LoggerFactory
+
 import scala.collection.JavaConverters._
-import org.deeplearning4j.datasets.iterator.MultipleEpochsIterator
-import org.deeplearning4j.datasets.iterator.impl.ListDataSetIterator
 
 object cnnEpochs {
   
@@ -73,21 +75,23 @@ object cnnEpochs {
       val dsiterTe = new ListDataSetIterator(trainTest.getTest.asList(), nbatch)
       val epochitTr: MultipleEpochsIterator = new MultipleEpochsIterator(nepochs, dsiterTr)
       val epochitTe: MultipleEpochsIterator = new MultipleEpochsIterator(nepochs, dsiterTe)
-    
-      val builder: MultiLayerConfiguration.Builder = new NeuralNetConfiguration.Builder()
+
+    // nice docs under https://deeplearning4j.org/mnist-for-beginners#building
+    // todo consider regularization here
+
+    val builder: MultiLayerConfiguration.Builder = new NeuralNetConfiguration.Builder()
               .seed(seed)
-              .iterations(iterations)
+//              .iterations(iterations)
               .miniBatch(true)
               .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
-              .learningRate(0.01)
-              .momentum(0.9)
-              .list(4)
+              .updater(new Nesterovs.Builder().learningRate(0.01).momentum(0.9).build())
+              .list()
               .layer(0, new ConvolutionLayer.Builder(6,6)
                       .nIn(nChannels)
                       .stride(2,2) // default stride(2,2)
                       .nOut(20) // # of feature maps
                       .dropOut(0.5)
-                      .activation("relu") // rectified linear units
+                      .activation(Activation.RELU) // rectified linear units
                       .weightInit(WeightInit.RELU)
                       .build())
                       
@@ -95,16 +99,17 @@ object cnnEpochs {
                       .build())
               .layer(2, new DenseLayer.Builder()
                       .nOut(40)
-                      .activation("relu")
+                      .activation(Activation.RELU)
                       .build())
               .layer(3, new OutputLayer.Builder(LossFunctions.LossFunction.MCXENT)
                       .nOut(outputNum)
                       .weightInit(WeightInit.XAVIER)
-                      .activation("softmax")
+                      .activation(Activation.RELU)
                       .build())
               .backprop(true).pretrain(false)
-              
-      new ConvolutionLayerSetup(builder, numRows, numColumns, nChannels)
+
+    // see /Users/brandl/projects/deep_learning/dl4j-examples/dl4j-examples/src/main/java/org/deeplearning4j/examples/feedforward/mnist/MLPMnistSingleLayerExample.java
+//      new ConvolutionLayerSetup(builder, numRows, numColumns, nChannels)
               
       val conf: MultiLayerConfiguration = builder.build()
 
