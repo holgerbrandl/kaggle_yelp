@@ -34,7 +34,7 @@ object images {
     } else {
       val imgsMap = imgsPath.map(x => patt_get_jpg_name.findAllIn(x).mkString.toInt -> x).toMap
       val imgsPathSub = getImgIdsForBizId(bizMap, bizIds)
-      imgsPathSub.map(x => imgsMap(x))
+      imgsPathSub.filter(x => imgsMap.contains(x)).map(x => imgsMap(x))
     }
   }
   
@@ -56,13 +56,14 @@ object images {
         val img0 = ImageIO.read(new File(x))
          .makeSquare
          .resizeImg(resizeImgDim, resizeImgDim) // (200, 200)
-         .image2gray
+          //          .save(new File(x.replace(".jpg", ".preproc.jpg")))
+          .image2gray
        if(nPixels != -1) img0.slice(0, nPixels)
        else img0
      }   
    ).filter( x => x._2 != ())
     .toMap
-    
+
   }
       
  

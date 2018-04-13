@@ -22,17 +22,19 @@ object runPipeline {
   val imgs = getImageIds("data/images/train", bizMap, bizMap.map(_._2).toSet.toList).slice(0,20000)
   val dataMap = processImages(imgs, resizeImgDim = 64) // nPixels = 64
   val alignedData = new alignedData(dataMap, bizMap, Option(labMap))()
-  
+
+
+
   // training (one model/class at a time). Many microparameters hardcoded within
-  //val cnn0 = trainModelEpochs(alignedData, bizClass = 0, saveNN = "results/modelsV0/model0_img10k_epoch50_batch64_pixels64") 
+  val cnn0 = trainModelEpochs(alignedData, bizClass = 0, saveNN = "results/modelsV0/model0_img10k_epoch50_batch64_pixels64")
   //val cnn1 = trainModelEpochs(alignedData, bizClass = 1, saveNN = "results/modelsV0/model1_img10k_epoch50_batch64_pixels64") 
-  val cnn2 = trainModelEpochs(alignedData, bizClass = 2, saveNN = "results/modelsV0/model2_img16k_epoch15_batch128_pixels64_nout100_200") 
-  val cnn3 = trainModelEpochs(alignedData, bizClass = 3, saveNN = "results/modelsV0/model3_img16k_epoch15_batch128_pixels64_nout100_200") 
-  val cnn4 = trainModelEpochs(alignedData, bizClass = 4, saveNN = "results/modelsV0/model4_img16k_epoch15_batch128_pixels64_nout100_200") 
-  val cnn5 = trainModelEpochs(alignedData, bizClass = 5, saveNN = "results/modelsV0/model5_img16k_epoch15_batch128_pixels64_nout100_200") 
-  val cnn6 = trainModelEpochs(alignedData, bizClass = 6, saveNN = "results/modelsV0/model6_img16k_epoch15_batch128_pixels64_nout100_200") 
-  val cnn7 = trainModelEpochs(alignedData, bizClass = 7, saveNN = "results/modelsV0/model7_img16k_epoch15_batch128_pixels64_nout100_200") 
-  val cnn8 = trainModelEpochs(alignedData, bizClass = 8, saveNN = "results/modelsV0/model8_img16k_epoch15_batch128_pixels64_nout100_200") 
+//  val cnn2 = trainModelEpochs(alignedData, bizClass = 2, saveNN = "results/modelsV0/model2_img16k_epoch15_batch128_pixels64_nout100_200")
+//  val cnn3 = trainModelEpochs(alignedData, bizClass = 3, saveNN = "results/modelsV0/model3_img16k_epoch15_batch128_pixels64_nout100_200")
+//  val cnn4 = trainModelEpochs(alignedData, bizClass = 4, saveNN = "results/modelsV0/model4_img16k_epoch15_batch128_pixels64_nout100_200")
+//  val cnn5 = trainModelEpochs(alignedData, bizClass = 5, saveNN = "results/modelsV0/model5_img16k_epoch15_batch128_pixels64_nout100_200")
+//  val cnn6 = trainModelEpochs(alignedData, bizClass = 6, saveNN = "results/modelsV0/model6_img16k_epoch15_batch128_pixels64_nout100_200")
+//  val cnn7 = trainModelEpochs(alignedData, bizClass = 7, saveNN = "results/modelsV0/model7_img16k_epoch15_batch128_pixels64_nout100_200")
+//  val cnn8 = trainModelEpochs(alignedData, bizClass = 8, saveNN = "results/modelsV0/model8_img16k_epoch15_batch128_pixels64_nout100_200")
 
   // processing test data for scoring
 //  val bizMapTE = readBiz2ImgLabels("data/labels/test_photo_to_biz.csv")

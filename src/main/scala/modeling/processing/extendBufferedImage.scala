@@ -2,6 +2,9 @@
 
 package modeling.processing
 
+import java.awt.image.BufferedImage
+import java.io.File
+
 import scala.Vector
 import org.imgscalr._
 
@@ -26,6 +29,14 @@ object imgUtils {
                    }
              }
     
+    def save(file:File) : BufferedImage = {
+      //https://stackoverflow.com/questions/12674064/how-to-save-a-bufferedimage-as-a-file
+      import javax.imageio.ImageIO
+      ImageIO.write(img, "jpg", file)
+      img
+    }
+
+     // also see https://stackoverflow.com/questions/9131678/convert-a-rgb-image-to-grayscale-image-reducing-the-memory-in-java
     def image2gray: Vector[Int] = image2vec(pixels2gray)
     def image2color: Vector[Int] = image2vec(pixels2color).flatten
     
